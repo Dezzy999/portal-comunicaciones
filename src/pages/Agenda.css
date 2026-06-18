@@ -1,0 +1,129 @@
+/* ===== AGENDA STYLES ===== */
+.agenda-section { display: flex; flex-direction: column; gap: 16px; }
+
+.agenda-section-title {
+  color: #94a3b8;
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.agenda-empty {
+  color: #334155;
+  font-size: 14px;
+  padding: 24px;
+  text-align: center;
+  background: rgba(15,23,42,0.4);
+  border: 2px dashed rgba(59,130,246,0.1);
+  border-radius: 12px;
+}
+
+.eventos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 14px;
+}
+
+.evento-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(59, 130, 246, 0.12);
+  border-radius: 14px;
+  padding: 18px;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.evento-card:hover {
+  border-color: rgba(59,130,246,0.25);
+  transform: translateY(-2px);
+}
+
+.evento-card.pasado {
+  opacity: 0.45;
+  filter: grayscale(0.3);
+}
+
+.ec-date {
+  min-width: 56px;
+  height: 64px;
+  border-radius: 12px;
+  border: 1px solid;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.ec-day {
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.ec-month {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+.ec-body { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+
+.ec-top { display: flex; align-items: center; gap: 8px; }
+
+.ec-tipo {
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.ec-titulo {
+  color: #e2e8f0;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.ec-desc {
+  color: #64748b;
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.ec-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  color: #475569;
+  font-size: 11px;
+  margin-top: 4px;
+}
+
+.ec-delete {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: none;
+  border: none;
+  color: #334155;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  transition: all 0.2s;
+}
+
+.ec-delete:hover {
+  background: rgba(239,68,68,0.1);
+  color: #ef4444;
+}
