@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -28,8 +29,22 @@ const rolLabels  = { admin: 'Administrador', supervisor: 'Supervisor', redactor:
 export default function Sidebar({ isOpen, onClose }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [showConfig, setShowConfig] = useState(false);
+  const [keyInput, setKeyInput] = useState(localStorage.getItem('GEMINI_API_KEY') || '');
 
   const handleLogout = () => { logout(); navigate('/login'); };
+
+  const saveKey = () => {
+    const cleanKey = keyInput.trim();
+    if (cleanKey) {
+      localStorage.setItem('GEMINI_API_KEY', cleanKey);
+      alert('Clave API de Gemini guardada localmente.');
+    } else {
+      localStorage.removeItem('GEMINI_API_KEY');
+      alert('Clave API eliminada.');
+    }
+    setShowConfig(false);
+  };
 
   return (
     <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
@@ -77,6 +92,32 @@ export default function Sidebar({ isOpen, onClose }) {
       </nav>
 
       <div className="sidebar-footer">
+        {/* Configuración de API Key para IA */}
+        <div className="sidebar-config-area">
+          <button 
+            className={`btn-toggle-config ${showConfig ? 'active' : ''}`}
+            onClick={() => setShowConfig(!showConfig)}
+          >
+            ⚙️ {showConfig ? 'Ocultar Ajustes' : 'Configurar IA'}
+          </button>
+          
+          {showConfig && (
+            <div className="config-form-popup">
+              <label className="config-label">Gemini API Key:</label>
+              <div style={{ display: 'flex', gap: 6, marginTop: 4 }}>
+                <input 
+                  type="password" 
+                  className="config-input"
+                  value={keyInput} 
+                  onChange={e => setKeyInput(e.target.value)} 
+                  placeholder="AIzaSy..."
+                />
+                <button className="btn-config-save" onClick={saveKey}>OK</button>
+              </div>
+            </div>
+          )}
+        </div>
+
         <div className="sidebar-year">
           <span>2026 · Humanismo Mexicano</span>
         </div>

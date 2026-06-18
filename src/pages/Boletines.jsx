@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import {
   Plus, X, FileText, CheckCircle, FileDown, Trash2,
-  Tag, User, Calendar, Filter, Loader2, AlertCircle
+  Tag, User, Calendar, Filter, Loader2, AlertCircle, Sparkles
 } from 'lucide-react';
 import jsPDF from 'jspdf';
 import { boletinesService } from '../services/dataService';
@@ -28,6 +28,51 @@ export default function Boletines() {
   const [detalle, setDetalle]   = useState(null);
   const [saving, setSaving]     = useState(false);
   const [form, setForm] = useState({ titulo:'', cuerpo:'', tema:'Gobierno', estado:'borrador' });
+
+  // AI Copilot States
+  const [aiNotes, setAiNotes] = useState('');
+  const [aiTone, setAiTone] = useState('Institucional');
+  const [aiLoading, setAiLoading] = useState(false);
+  const [aiError, setAiError] = useState(null);
+
+  const handleAiAction = async (action) => {
+    setAiLoading(true);
+    setAiError(null);
+    try {
+      const apiKey = localStorage.getItem('GEMINI_API_KEY');
+      const response = await fetch('/api/ai', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-gemini-key': apiKey
+        },
+        body: JSON.stringify({
+          action: 'copilot',
+          notes: action === 'copilot' ? aiNotes : `Título actual: ${form.titulo}\nCuerpo actual: ${form.cuerpo}\nAcción: ${action}`,
+          tone: aiTone
+        })
+      });
+
+      const resJson = await response.json();
+      if (!response.ok) {
+        throw new Error(resJson.error || 'Error al comunicarse con la IA');
+      }
+
+      if (resJson.data) {
+        const { titulo, cuerpo } = resJson.data;
+        if (titulo && cuerpo) {
+          setForm(prev => ({ ...prev, titulo, cuerpo }));
+        } else if (resJson.data.rawText) {
+          setForm(prev => ({ ...prev, cuerpo: resJson.data.rawText }));
+        }
+      }
+    } catch (err) {
+      console.error(err);
+      setAiError(err.message || 'No se pudo conectar al servicio de IA.');
+    } finally {
+      setAiLoading(false);
+    }
+  };
 
   // ── Cargar boletines ──────────────────────────────────────
   const fetchBoletines = async () => {
@@ -213,41 +258,114 @@ export default function Boletines() {
       {/* Modal */}
       {modal && (
         <div className="modal-overlay" onClick={() => setModal(false)}>
-          <div className="modal" onClick={e => e.stopPropagation()}>
+          <div className="modal modal-split-view" onClick={e => e.stopPropagation()}>
             <div className="modal-header">
               <h2>Nuevo Boletín</h2>
               <button className="btn-close" onClick={() => setModal(false)}><X size={18} strokeWidth={2} /></button>
             </div>
-            <form onSubmit={handleCrear} className="modal-form">
-              <div className="mf-group">
-                <label>Título del boletín</label>
-                <input value={form.titulo} onChange={e => setForm({...form,titulo:e.target.value})} placeholder="Ingresa el título..." required />
-              </div>
-              <div className="mf-row">
-                <div className="mf-group"><label>Tema</label>
-                  <select value={form.tema} onChange={e => setForm({...form,tema:e.target.value})}>
-                    {temas.map(t => <option key={t}>{t}</option>)}
-                  </select>
+            
+            <div className="modal-body-split">
+              {/* Formulario Izquierda */}
+              <form onSubmit={handleCrear} className="modal-form-main">
+                <div className="mf-group">
+                  <label>Título del boletín</label>
+                  <input value={form.titulo} onChange={e => setForm({...form,titulo:e.target.value})} placeholder="Ingresa el título..." required />
                 </div>
-                <div className="mf-group"><label>Estado inicial</label>
-                  <select value={form.estado} onChange={e => setForm({...form,estado:e.target.value})}>
-                    <option value="borrador">Borrador</option>
-                    <option value="aprobado">Aprobado</option>
-                  </select>
+                <div className="mf-row">
+                  <div className="mf-group"><label>Tema</label>
+                    <select value={form.tema} onChange={e => setForm({...form,tema:e.target.value})}>
+                      {temas.map(t => <option key={t}>{t}</option>)}
+                    </select>
+                  </div>
+                  <div className="mf-group"><label>Estado inicial</label>
+                    <select value={form.estado} onChange={e => setForm({...form,estado:e.target.value})}>
+                      <option value="borrador">Borrador</option>
+                      <option value="aprobado">Aprobado</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="mf-group">
+                  <label>Contenido del boletín</label>
+                  <textarea value={form.cuerpo} onChange={e => setForm({...form,cuerpo:e.target.value})} placeholder="Redacta el contenido del comunicado..." rows={7} required />
+                </div>
+                <div className="modal-actions">
+                  <button type="button" className="btn-cancel" onClick={() => setModal(false)}>Cancelar</button>
+                  <button type="submit" className="btn-primary" disabled={saving}>
+                    {saving ? <Loader2 size={15} strokeWidth={2} className="spin" /> : <Plus size={16} strokeWidth={2.5} />}
+                    {saving ? 'Guardando…' : 'Guardar Boletín'}
+                  </button>
+                </div>
+              </form>
+
+              {/* Copilot IA Derecha */}
+              <div className="ai-copilot-panel">
+                <div className="ai-panel-header">
+                  <Sparkles size={16} color="#d7cfbe" />
+                  <h3>Asistente IA (Copilot)</h3>
+                </div>
+                <p className="ai-panel-desc">Usa la IA de Gemini para redactar o perfeccionar tu boletín de prensa.</p>
+                
+                <div className="ai-panel-body">
+                  <div className="ai-form-group">
+                    <label>Notas clave del evento</label>
+                    <textarea 
+                      value={aiNotes} 
+                      onChange={e => setAiNotes(e.target.value)} 
+                      placeholder="Ej: Inauguración de jornada de vacunación por el DIF Hueypoxtla a 300 familias este domingo en la explanada..."
+                      rows={4}
+                    />
+                  </div>
+                  
+                  <div className="ai-form-row">
+                    <div className="ai-form-group">
+                      <label>Tono del boletín</label>
+                      <select value={aiTone} onChange={e => setAiTone(e.target.value)}>
+                        <option value="Institucional">Institucional (Formal)</option>
+                        <option value="Comunitario">Comunitario (Cercano)</option>
+                        <option value="Urgente">Urgente (Alerta/Aviso)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {aiError && (
+                    <div className="ai-panel-error">
+                      <span>{aiError}</span>
+                    </div>
+                  )}
+
+                  <div className="ai-panel-buttons">
+                    <button 
+                      type="button" 
+                      className="btn-ai-action btn-ai-primary" 
+                      onClick={() => handleAiAction('copilot')}
+                      disabled={aiLoading || !aiNotes.trim()}
+                    >
+                      {aiLoading ? <Loader2 size={13} className="spin" /> : <Sparkles size={13} />}
+                      {aiLoading ? 'Generando borrador…' : 'Redactar Borrador'}
+                    </button>
+                    
+                    <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
+                      <button 
+                        type="button" 
+                        className="btn-ai-action btn-ai-secondary" 
+                        onClick={() => handleAiAction('improve')}
+                        disabled={aiLoading || !form.cuerpo.trim()}
+                      >
+                        Optimizar redacción
+                      </button>
+                      <button 
+                        type="button" 
+                        className="btn-ai-action btn-ai-secondary" 
+                        onClick={() => handleAiAction('grammar')}
+                        disabled={aiLoading || !form.cuerpo.trim()}
+                      >
+                        Corregir ortografía
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="mf-group">
-                <label>Contenido del boletín</label>
-                <textarea value={form.cuerpo} onChange={e => setForm({...form,cuerpo:e.target.value})} placeholder="Redacta el contenido del comunicado..." rows={7} required />
-              </div>
-              <div className="modal-actions">
-                <button type="button" className="btn-cancel" onClick={() => setModal(false)}>Cancelar</button>
-                <button type="submit" className="btn-primary" disabled={saving}>
-                  {saving ? <Loader2 size={15} strokeWidth={2} className="spin" /> : <Plus size={16} strokeWidth={2.5} />}
-                  {saving ? 'Guardando…' : 'Guardar Boletín'}
-                </button>
-              </div>
-            </form>
+            </div>
           </div>
         </div>
       )}

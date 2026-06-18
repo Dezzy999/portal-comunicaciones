@@ -437,7 +437,174 @@
   to   { transform: rotate(360deg); }
 }
 
+/* Modal Split View for AI Copilot */
+.modal.modal-split-view {
+  max-width: 950px;
+  width: 90%;
+}
+
+.modal-body-split {
+  display: flex;
+  gap: 24px;
+  margin-top: 16px;
+}
+
+.modal-form-main {
+  flex: 1.2;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ai-copilot-panel {
+  flex: 0.9;
+  background: rgba(8, 10, 14, 0.4);
+  border: 1px solid rgba(215, 207, 190, 0.15);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ai-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid rgba(215, 207, 190, 0.1);
+  padding-bottom: 10px;
+}
+
+.ai-panel-header h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fafaf9;
+  margin: 0;
+}
+
+.ai-panel-desc {
+  font-size: 11px;
+  color: #7c7263;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.ai-panel-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ai-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ai-form-group label {
+  color: #8c857b;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ai-form-group textarea,
+.ai-form-group select {
+  background: rgba(4, 5, 8, 0.6);
+  border: 1px solid rgba(215, 207, 190, 0.15);
+  border-radius: 10px;
+  color: #e2e8f0;
+  font-size: 13px;
+  padding: 8px 12px;
+  font-family: 'Inter', sans-serif;
+  resize: none;
+}
+
+.ai-form-group textarea:focus,
+.ai-form-group select:focus {
+  outline: none;
+  border-color: #d7cfbe;
+}
+
+.ai-form-group select option {
+  background: #0c0d10;
+}
+
+.ai-panel-error {
+  background: rgba(239, 68, 68, 0.06);
+  border: 1px solid rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 11px;
+}
+
+.ai-panel-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.btn-ai-action {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Inter', sans-serif;
+}
+
+.btn-ai-primary {
+  background: #d7cfbe;
+  color: #0c0d0f;
+  border: none;
+}
+
+.btn-ai-primary:hover:not(:disabled) {
+  background: #fafaf9;
+}
+
+.btn-ai-primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn-ai-secondary {
+  background: rgba(215, 207, 190, 0.06);
+  border: 1px solid rgba(215, 207, 190, 0.2);
+  color: #d7cfbe;
+}
+
+.btn-ai-secondary:hover:not(:disabled) {
+  background: rgba(215, 207, 190, 0.12);
+  border-color: rgba(215, 207, 190, 0.35);
+}
+
+.btn-ai-secondary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
 @media (max-width: 768px) {
+  .modal.modal-split-view {
+    width: 95%;
+    max-width: 100%;
+    margin: 16px auto;
+    padding: 20px;
+  }
+  
+  .modal-body-split {
+    flex-direction: column;
+    gap: 20px;
+  }
+
   /* Ocultar la lista de boletines cuando se visualiza el detalle de uno */
   .boletines-layout:has(.boletin-detail) .boletines-list {
     display: none;
@@ -477,13 +644,5 @@
   .filter-tab {
     white-space: nowrap;
     flex-shrink: 0;
-  }
-  
-  /* Adaptación de tamaño del modal de creación */
-  .modal {
-    width: 95%;
-    max-width: 100%;
-    margin: 16px auto;
-    padding: 20px;
   }
 }
