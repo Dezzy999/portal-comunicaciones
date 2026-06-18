@@ -87,20 +87,9 @@ async function scrapeFacebook() {
     // ════════════════════════════════════════════
     // 2. EXTRAER PUBLICACIONES RECIENTES Y MARCAS DE TIEMPO
     // ════════════════════════════════════════════
-    const postTexts = [];
-    const timestamps = [];
+    const postsExtracted = [];
 
-    // Extraer timestamps reales del HTML
-    const tsRegex = /"creation_time":\s*(\d+)/g;
-    let tsMatch;
-    while ((tsMatch = tsRegex.exec(html)) !== null) {
-      const ts = parseInt(tsMatch[1], 10);
-      if (ts > 1000000000 && ts < 2000000000 && !timestamps.includes(ts)) {
-        timestamps.push(ts);
-      }
-    }
-
-    // Extraer textos de posts
+    // Extraer textos de posts y sus marcas de tiempo por proximidad
     const textRegex = /"text":"([^"]{50,3000})"/g;
     let match;
     while ((match = textRegex.exec(html)) !== null) {
@@ -141,28 +130,33 @@ async function scrapeFacebook() {
       );
 
       if (isExcluded) continue;
+
+      // Buscar creation_time después del match.index dentro de 25,000 caracteres
+      const searchWindow = html.substring(match.index, match.index + 25000);
+      const tsMatch = searchWindow.match(/"creation_time":\s*(\d+)/);
+      const timestamp = tsMatch ? parseInt(tsMatch[1], 10) : Math.floor(Date.now() / 1000);
       
-      if (!postTexts.includes(cleanText)) {
-        postTexts.push(cleanText);
+      if (!postsExtracted.some(p => p.texto === cleanText)) {
+        postsExtracted.push({ texto: cleanText, timestamp });
       }
     }
 
-    console.log(`📝 Se identificaron ${postTexts.length} publicaciones válidas en el HTML.`);
+    console.log(`📝 Se identificaron ${postsExtracted.length} publicaciones válidas en el HTML.`);
 
     // Crear objetos de publicaciones
-    const newPostsParsed = postTexts.map((text, i) => {
-      const timestamp = timestamps[i] || Math.floor(Date.now() / 1000);
+    const newPostsParsed = postsExtracted.map((item, i) => {
+      const timestamp = item.timestamp;
       const postDate = new Date(timestamp * 1000);
       const dateStr = postDate.toISOString().split('T')[0];
 
       let tipo = 'aviso';
-      if (text.toLowerCase().includes('obra') || text.toLowerCase().includes('paviment')) {
+      if (item.texto.toLowerCase().includes('obra') || item.texto.toLowerCase().includes('paviment')) {
         tipo = 'obra';
-      } else if (text.toLowerCase().includes('salud') || text.toLowerCase().includes('jornada') || text.toLowerCase().includes('prevención')) {
+      } else if (item.texto.toLowerCase().includes('salud') || item.texto.toLowerCase().includes('jornada') || item.texto.toLowerCase().includes('prevención')) {
         tipo = 'aviso';
-      } else if (text.toLowerCase().includes('felicit') || text.toLowerCase().includes('cbt') || text.toLowerCase().includes('logro')) {
+      } else if (item.texto.toLowerCase().includes('felicit') || item.texto.toLowerCase().includes('cbt') || item.texto.toLowerCase().includes('logro')) {
         tipo = 'reconocimiento';
-      } else if (text.length > 150) {
+      } else if (item.texto.length > 150) {
         tipo = 'foto';
       }
 
@@ -172,7 +166,7 @@ async function scrapeFacebook() {
 
       return {
         id: `fb_post_${timestamp}_${i}`,
-        texto: text,
+        texto: item.texto,
         fecha: dateStr,
         likes,
         comentarios,

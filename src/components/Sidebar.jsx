@@ -8,6 +8,7 @@ import {
   BarChart2,
   LogOut,
   Building2,
+  X, // Add X icon
 } from 'lucide-react';
 import Facebook from './FacebookIcon';
 import './Sidebar.css';
@@ -24,14 +25,14 @@ const navItems = [
 const rolColors  = { admin: '#3b82f6', supervisor: '#a855f7', redactor: '#10b981' };
 const rolLabels  = { admin: 'Administrador', supervisor: 'Supervisor', redactor: 'Redactor' };
 
-export default function Sidebar() {
+export default function Sidebar({ isOpen, onClose }) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => { logout(); navigate('/login'); };
 
   return (
-    <aside className="sidebar">
+    <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
       <div className="sidebar-brand">
         <div className="brand-icon-wrap">
           <Building2 size={22} strokeWidth={1.5} color="#60a5fa" />
@@ -40,6 +41,10 @@ export default function Sidebar() {
           <span className="brand-name">Portal Comunicaciones</span>
           <span className="brand-sub">Automatización</span>
         </div>
+        {/* Close button on mobile */}
+        <button className="sidebar-close" onClick={onClose} aria-label="Cerrar menú">
+          <X size={20} color="#fafaf9" />
+        </button>
       </div>
 
       <div className="sidebar-user">
@@ -63,6 +68,7 @@ export default function Sidebar() {
             key={to}
             to={to}
             className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+            onClick={onClose}
           >
             <Icon size={18} strokeWidth={1.8} className="nav-icon-svg" />
             <span className="nav-label">{label}</span>

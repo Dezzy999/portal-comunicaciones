@@ -213,3 +213,24 @@
 }
 
 .evento-meta { color: #475569; font-size: 11px; }
+
+@media (max-width: 600px) {
+  .dash-title {
+    font-size: 22px;
+  }
+  .stat-card {
+    padding: 16px;
+    gap: 12px;
+  }
+  .stat-value {
+    font-size: 24px;
+  }
+  .stat-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+  .dash-card {
+    padding: 18px;
+  }
+}

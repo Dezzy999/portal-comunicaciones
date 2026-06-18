@@ -10,7 +10,7 @@ import { supabase, isSupabaseConfigured } from '../lib/supabaseClient';
 import './FacebookPanel.css';
 
 // URL oficial del Ayuntamiento de Hueypoxtla
-const FB_PAGE_URL   = 'https://www.facebook.com/share/18gB7YxbpF/';
+const FB_PAGE_URL   = 'https://www.facebook.com/GobiernoHueypoxtla';
 const FB_PAGE_NAME  = 'H. Ayuntamiento de Hueypoxtla';
 
 const tipoColor = {

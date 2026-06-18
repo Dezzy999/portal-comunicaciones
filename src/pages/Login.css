@@ -281,3 +281,19 @@
   letter-spacing: 0.5px;
   margin: 0;
 }
+
+@media (max-width: 480px) {
+  .login-card {
+    padding: 32px 20px;
+    border-radius: 16px;
+    margin: 16px;
+    width: calc(100% - 32px);
+  }
+  .login-title {
+    font-size: 26px;
+  }
+  .logo-ring {
+    width: 60px;
+    height: 60px;
+  }
+}

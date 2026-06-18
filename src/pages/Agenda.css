@@ -23,7 +23,7 @@
 
 .eventos-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(290px, 100%), 1fr));
   gap: 14px;
 }
 
@@ -126,4 +126,30 @@
 .ec-delete:hover {
   background: rgba(239,68,68,0.1);
   color: #ef4444;
+}
+
+@media (max-width: 600px) {
+  .evento-card {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 14px;
+  }
+  
+  .ec-date {
+    height: 48px;
+    min-width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  
+  .ec-day {
+    font-size: 18px;
+  }
+  
+  .ec-month {
+    font-size: 11px;
+    letter-spacing: 0.5px;
+  }
 }

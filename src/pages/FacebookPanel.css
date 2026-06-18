@@ -379,6 +379,7 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 16px;
+    padding: 16px;
   }
   
   .fb-page-badge {
@@ -392,5 +393,23 @@
   .fb-post-tipo {
     position: absolute;
     top: 0; right: 0;
+  }
+  
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  
+  .page-header > div:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+  
+  .btn-fb-link, .btn-refresh {
+    width: 100%;
+    justify-content: center;
   }
 }

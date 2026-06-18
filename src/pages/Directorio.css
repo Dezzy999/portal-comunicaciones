@@ -7,6 +7,7 @@
 
 .search-wrapper {
   position: relative;
+  width: 100%;
   max-width: 400px;
 }
 
@@ -193,3 +194,44 @@
 
 .dir-stat-num  { font-size: 22px; font-weight: 800; line-height: 1; }
 .dir-stat-label { color: #64748b; font-size: 11px; }
+
+@media (max-width: 768px) {
+  /* Cabecera responsiva */
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  
+  .page-header .btn-primary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Desplazamiento horizontal para pestañas de filtro */
+  .filter-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    margin-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .filter-tab {
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* Controles y campos de búsqueda en móviles */
+  .dir-controls {
+    gap: 10px;
+  }
+
+  /* Ajustar modal del directorio */
+  .modal {
+    width: 95%;
+    max-width: 100%;
+    margin: 16px auto;
+    padding: 20px;
+  }
+}
