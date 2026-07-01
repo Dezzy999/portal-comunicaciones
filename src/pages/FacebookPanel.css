@@ -705,3 +705,98 @@
     justify-content: center;
   }
 }
+
+/* Composer Card Styles */
+.fb-composer-card {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(215, 207, 190, 0.18);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 32px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.composer-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.composer-header h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fafaf9;
+  margin: 0;
+}
+
+.composer-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.composer-textarea {
+  width: 100%;
+  padding: 14px;
+  background: rgba(8, 11, 17, 0.95);
+  border: 1px solid rgba(215, 207, 190, 0.12);
+  border-radius: 12px;
+  color: #f1f5f9;
+  font-size: 14px;
+  line-height: 1.6;
+  resize: vertical;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.2s;
+  box-sizing: border-box;
+}
+
+.composer-textarea:focus {
+  border-color: #3b82f6;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+}
+
+.composer-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.composer-char-count {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.btn-composer-submit {
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #1877f2, #3b82f6);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Inter', sans-serif;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-composer-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59,130,246,0.3);
+}
+
+.btn-composer-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+

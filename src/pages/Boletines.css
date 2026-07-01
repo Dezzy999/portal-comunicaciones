@@ -646,3 +646,24 @@
     flex-shrink: 0;
   }
 }
+
+.btn-facebook {
+  padding: 9px 16px;
+  background: rgba(29, 78, 216, 0.12);
+  color: #8fa4c7;
+  border: 1px solid rgba(29, 78, 216, 0.3);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.btn-facebook:hover {
+  background: rgba(29, 78, 216, 0.2);
+  color: #a3b8cc;
+}
+

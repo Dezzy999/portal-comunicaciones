@@ -261,6 +261,26 @@ export const facebookService = {
       console.error("Error running real-time sync API:", err);
       return { data: null, error: err.message };
     }
+  },
+
+  async publishPost(message, link = null, bulletinId = null) {
+    try {
+      const res = await fetch('/api/facebook-publish', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ message, link, bulletinId })
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Error al publicar en Facebook.');
+      }
+      return { data, error: null };
+    } catch (err) {
+      console.error("Meta API publish failed:", err);
+      return { data: null, error: err.message };
+    }
   }
 };
 

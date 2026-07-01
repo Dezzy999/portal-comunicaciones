@@ -68,6 +68,10 @@ export default function FacebookPanel() {
   const [analysisLoading, setAnalysisLoading] = useState(false);
   const [analysisError, setAnalysisError] = useState(null);
 
+  // Composer States
+  const [composerText, setComposerText] = useState('');
+  const [publishingPost, setPublishingPost] = useState(false);
+
   const handleAnalyze = async (postId, postText, simulate = true) => {
     setAnalysisLoading(true);
     setAnalysisError(null);
@@ -104,6 +108,32 @@ export default function FacebookPanel() {
       setAnalysisError(err.message || 'No se pudo conectar al servicio de IA.');
     } finally {
       setAnalysisLoading(false);
+    }
+  };
+
+  const handlePublishCustomPost = async (e) => {
+    e.preventDefault();
+    if (!composerText.trim()) return;
+
+    if (!window.confirm("¿Deseas publicar este mensaje directamente en la página de Facebook del Ayuntamiento?")) {
+      return;
+    }
+
+    setPublishingPost(true);
+    try {
+      const res = await facebookService.publishPost(composerText);
+      if (res.error) {
+        alert(`No se pudo publicar en Facebook: ${res.error}`);
+      } else {
+        alert('¡Publicación realizada con éxito!');
+        setComposerText('');
+        await handleRefresh();
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error al intentar publicar.');
+    } finally {
+      setPublishingPost(false);
     }
   };
 
@@ -260,6 +290,36 @@ export default function FacebookPanel() {
         <StatCard label="Me gusta"       value={stats.megusta}     sub="total"            Icon={ThumbsUp}   color="#d7cfbe" />
         <StatCard label="Alcance semanal"value={stats.alcance}     sub="personas"         Icon={Eye}        color="#8fa4c7" />
         <StatCard label="Interacción"    value={typeof stats.interaccion === 'number' ? `${stats.interaccion}%` : stats.interaccion} sub="promedio"  Icon={TrendingUp} color="#8fa4c7" />
+      </div>
+
+      {/* Composer de Nueva Publicación */}
+      <div className="fb-composer-card">
+        <div className="composer-header">
+          <Sparkles size={16} color="#d7cfbe" />
+          <h3>Nueva Publicación en Facebook</h3>
+        </div>
+        <form onSubmit={handlePublishCustomPost} className="composer-form">
+          <textarea
+            className="composer-textarea"
+            placeholder="¿Qué quieres publicar hoy en el muro del Gobierno de Hueypoxtla? Escribe aquí tu comunicado..."
+            value={composerText}
+            onChange={e => setComposerText(e.target.value)}
+            rows={3}
+            required
+            disabled={publishingPost}
+          />
+          <div className="composer-actions">
+            <span className="composer-char-count">{composerText.length} caracteres</span>
+            <button
+              type="submit"
+              className="btn-composer-submit btn-primary"
+              disabled={publishingPost || !composerText.trim()}
+            >
+              {publishingPost ? <Loader2 size={14} className="spin" /> : <Facebook size={14} />}
+              {publishingPost ? 'Publicando…' : 'Publicar en Facebook'}
+            </button>
+          </div>
+        </form>
       </div>
 
       {/* Posts */}

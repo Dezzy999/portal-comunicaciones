@@ -4,9 +4,10 @@ import {
   Tag, User, Calendar, Filter, Loader2, AlertCircle, Sparkles
 } from 'lucide-react';
 import jsPDF from 'jspdf';
-import { boletinesService } from '../services/dataService';
+import { boletinesService, facebookService } from '../services/dataService';
 import { useAuth } from '../context/AuthContext';
 import { isSupabaseConfigured } from '../lib/supabaseClient';
+import Facebook from '../components/FacebookIcon';
 import './Boletines.css';
 
 const estadoConfig = {
@@ -27,6 +28,7 @@ export default function Boletines() {
   const [filtro, setFiltro]     = useState('todos');
   const [detalle, setDetalle]   = useState(null);
   const [saving, setSaving]     = useState(false);
+  const [publishingFb, setPublishingFb] = useState(false);
   const [form, setForm] = useState({ titulo:'', cuerpo:'', tema:'Gobierno', estado:'borrador' });
 
   // AI Copilot States
@@ -71,6 +73,29 @@ export default function Boletines() {
       setAiError(err.message || 'No se pudo conectar al servicio de IA.');
     } finally {
       setAiLoading(false);
+    }
+  };
+
+  const handlePublishToFacebook = async (b) => {
+    if (!window.confirm("¿Estás seguro de que deseas publicar este boletín directamente en la página de Facebook del Ayuntamiento?")) {
+      return;
+    }
+    setPublishingFb(true);
+    try {
+      const textToPublish = `${b.titulo}\n\n${b.cuerpo}`;
+      const res = await facebookService.publishPost(textToPublish, null, b.id);
+      if (res.error) {
+        alert(`No se pudo publicar en Facebook: ${res.error}`);
+      } else {
+        alert('¡Boletín publicado con éxito en Facebook!');
+        setBoletines(prev => prev.map(x => x.id === b.id ? { ...x, estado: 'publicado' } : x));
+        if (detalle?.id === b.id) setDetalle(prev => ({ ...prev, estado: 'publicado' }));
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Error al intentar publicar en Facebook.');
+    } finally {
+      setPublishingFb(false);
     }
   };
 
@@ -237,6 +262,12 @@ export default function Boletines() {
                 <button className="btn-aprobar" onClick={() => handleAprobar(detalle)}>
                   <CheckCircle size={15} strokeWidth={2} />
                   {detalle.estado === 'borrador' ? 'Aprobar' : 'Publicar'}
+                </button>
+              )}
+              {detalle.estado !== 'borrador' && (
+                <button className="btn-facebook" onClick={() => handlePublishToFacebook(detalle)} disabled={publishingFb}>
+                  {publishingFb ? <Loader2 size={15} className="spin" /> : <Facebook size={15} />}
+                  {publishingFb ? 'Publicando…' : 'Enviar a Facebook'}
                 </button>
               )}
               <button className="btn-pdf" onClick={() => exportarPDF(detalle)}>
