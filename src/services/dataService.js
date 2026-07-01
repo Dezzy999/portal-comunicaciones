@@ -239,5 +239,28 @@ export const facebookService = {
       console.error("Error reading facebook recent posts cache from Supabase:", err);
       return { data: defaultPosts, isMock: true, error: err.message };
     }
+  },
+
+  async syncRealtime() {
+    if (!isSupabaseConfigured()) {
+      return { error: 'Supabase no está configurado.' };
+    }
+    try {
+      const res = await fetch('/api/facebook-sync', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Error al sincronizar con Facebook.');
+      }
+      return { data, error: null };
+    } catch (err) {
+      console.error("Error running real-time sync API:", err);
+      return { data: null, error: err.message };
+    }
   }
 };
+

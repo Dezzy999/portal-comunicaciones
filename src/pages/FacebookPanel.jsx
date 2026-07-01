@@ -167,9 +167,35 @@ export default function FacebookPanel() {
     };
   }, []);
 
-  const handleRefresh = () => {
-    syncFacebookData(true);
+  const handleRefresh = async () => {
+    if (isDemoMode) {
+      // Si estamos en modo demo (sin Supabase), solo refrescamos con mockData
+      await syncFacebookData(true);
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await facebookService.syncRealtime();
+      if (res.error) {
+        console.warn("Real-time sync API returned error, falling back to cache:", res.error);
+        // Fallback a leer de la caché si la API de sync falló (ej. por bloqueos de Meta)
+        await syncFacebookData(false);
+      } else if (res.data && res.data.success) {
+        // Actualizar directamente con los datos devueltos por el sync en tiempo real
+        setStats(res.data.stats);
+        setPosts(res.data.posts);
+        setLastSync(new Date());
+        setIsDemoMode(false);
+      }
+    } catch (err) {
+      console.error("Manual sync failed, loading cached data:", err);
+      await syncFacebookData(false);
+    } finally {
+      setLoading(false);
+    }
   };
+
 
   return (
     <div className="page">
